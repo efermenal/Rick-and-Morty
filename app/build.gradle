@@ -36,6 +36,10 @@ android {
         unitTests.returnDefaultValues = true
         animationsDisabled = true
     }
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {
