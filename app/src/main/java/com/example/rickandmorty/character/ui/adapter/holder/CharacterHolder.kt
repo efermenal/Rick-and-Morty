@@ -7,6 +7,7 @@ import com.example.rickandmorty.R
 import com.example.rickandmorty.character.domain.Character
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter
 import com.example.rickandmorty.databinding.RowCharacterBinding
+import com.example.rickandmorty.global.loadFromUrl
 
 class CharacterHolder(
     private val binding: RowCharacterBinding,
@@ -22,6 +23,7 @@ class CharacterHolder(
     fun bind(character: Character) {
         with(binding) {
             characterName.text = character.name
+            characterImage.loadFromUrl(character.image)
         }
     }
 
