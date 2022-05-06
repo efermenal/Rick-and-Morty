@@ -8,8 +8,12 @@ import com.example.rickandmorty.character.domain.CharacterRepository
 import com.example.rickandmorty.character.toDomain
 import com.example.rickandmorty.global.Result
 import java.io.IOException
+import javax.inject.Inject
 
-class CharacterRepositoryImpl(private val api: RickAndMortyApi) : CharacterRepository {
+class CharacterRepositoryImpl @Inject constructor(
+    private val api: RickAndMortyApi
+) :
+    CharacterRepository {
     override suspend fun getAllCharacters(): Result<List<Character>, Throwable> {
         return try {
             Result.Success(api.getCharacters().toDomain().characters)

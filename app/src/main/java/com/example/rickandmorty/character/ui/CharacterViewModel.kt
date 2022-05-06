@@ -5,14 +5,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.rickandmorty.character.domain.Character
 import com.example.rickandmorty.character.domain.GetCharactersUseCase
 import com.example.rickandmorty.global.Result
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CharacterViewModel(
+@HiltViewModel
+class CharacterViewModel @Inject constructor(
     private val getCharactersUseCase: GetCharactersUseCase
 ) : ViewModel() {
 
@@ -40,7 +43,7 @@ class CharacterViewModel(
             runCatching {
                 getCharactersUseCase()
             }.onSuccess {
-                when(it) {
+                when (it) {
                     is Result.Error -> {
                         stopLoadAndEmitError()
                     }
