@@ -6,10 +6,10 @@ import retrofit2.http.GET
 interface RickAndMortyApi {
 
     @GET("/api/character")
-    fun getCharacters(): ResponseCharacterDto
+    suspend fun getCharacters(): ResponseCharacterDto
 
 }
 
-object url {
+object Url {
     const val API = "https://rickandmortyapi.com"
 }
