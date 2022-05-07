@@ -14,9 +14,9 @@ class CharacterRepositoryImpl @Inject constructor(
     private val api: RickAndMortyApi
 ) :
     CharacterRepository {
-    override suspend fun getAllCharacters(): Result<List<Character>, Throwable> {
+    override suspend fun getAllCharacters(page: Int): Result<List<Character>, Throwable> {
         return try {
-            Result.Success(api.getCharacters().toDomain().characters)
+            Result.Success(api.getCharacters(page).toDomain().characters)
         } catch (e: IOException) {
             Result.Exception(IoException)
         } catch (e: retrofit2.HttpException) {

@@ -33,15 +33,16 @@ class CharacterViewModel @Inject constructor(
     data class ViewState(
         val characters: List<Character> = emptyList(),
         val isLoading: Boolean = false,
+        val page: Int = 1,
     )
-    
+
     private fun currentViewState(): ViewState = viewState.value
 
     fun getCharacters() {
         viewModelScope.launch {
             viewStateFlow.emit(currentViewState().copy(isLoading = true))
             runCatching {
-                getCharactersUseCase()
+                getCharactersUseCase(currentViewState().page)
             }.onSuccess {
                 when (it) {
                     is Result.Error -> {
