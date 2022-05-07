@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.rickandmorty.R
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter
 import com.example.rickandmorty.databinding.FragmentCharacterBinding
@@ -49,6 +50,7 @@ class CharacterFragment : Fragment(R.layout.fragment_character), CharacterAdapte
         characterAdapter = CharacterAdapter(this)
         binding.characterContentView.apply {
             adapter = characterAdapter
+            layoutManager = GridLayoutManager(activity, CHARACTER_PER_ROW)
         }
     }
 
@@ -66,6 +68,10 @@ class CharacterFragment : Fragment(R.layout.fragment_character), CharacterAdapte
             false -> {}
         }
         characterAdapter.submitList(characterState.characters)
+    }
+
+    companion object {
+        private const val CHARACTER_PER_ROW = 4
     }
 
 }
