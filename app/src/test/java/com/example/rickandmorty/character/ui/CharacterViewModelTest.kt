@@ -31,7 +31,7 @@ class CharacterViewModelTest {
 
     @Test
     fun whenCallToApiSuccessReturnCharacters() = runTest {
-        whenever(getCharactersUseCase()).thenAnswer {
+        whenever(getCharactersUseCase(1)).thenAnswer {
             Result.Success(
                 getDefaultDummyCharacters()
             )
@@ -44,7 +44,7 @@ class CharacterViewModelTest {
 
     @Test
     fun whenCallToApiFailsReturnError() = runTest {
-        whenever(getCharactersUseCase()).thenThrow(RuntimeException())
+        whenever(getCharactersUseCase(1)).thenThrow(RuntimeException())
 
         viewModel.getCharacters()
 
