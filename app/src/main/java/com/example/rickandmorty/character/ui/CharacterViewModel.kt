@@ -54,8 +54,9 @@ class CharacterViewModel @Inject constructor(
                     is Result.Success -> {
                         viewStateFlow.emit(
                             currentViewState().copy(
-                                characters = it.data,
-                                isLoading = false
+                                characters = currentViewState().characters + it.data,
+                                isLoading = false,
+                                page = currentViewState().page + 1
                             )
                         )
                     }
