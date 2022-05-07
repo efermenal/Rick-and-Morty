@@ -14,12 +14,40 @@ class CharacterAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterHolder {
-        return CharacterHolder.from(parent, listener)
+        return if (viewType == VIEW_TYPE_ITEM) {
+            CharacterHolder.CharacterItemHolder.from(parent, listener)
+        } else {
+            CharacterHolder.LoadingItemHolder.from(parent)
+        }
     }
 
     override fun onBindViewHolder(holder: CharacterHolder, position: Int) {
+        if (holder is CharacterHolder.CharacterItemHolder) {
+            val character = getItem(position)
+            holder.bind(character)
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
         val character = getItem(position)
-        holder.bind(character)
+        return if (character != null) VIEW_TYPE_ITEM else VIEW_TYPE_LOADING
+    }
+
+    fun addLoadingView() {
+        val newList = currentList + null
+        submitList(newList)
+    }
+
+    fun removeLoadingView() {
+        if (currentList.size != 0) {
+            val newList = currentList.subList(0, currentList.size - 1)
+            submitList(newList)
+        }
+    }
+
+    companion object {
+        const val VIEW_TYPE_ITEM = 0
+        const val VIEW_TYPE_LOADING = 1
     }
 
 }

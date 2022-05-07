@@ -10,8 +10,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter
+import com.example.rickandmorty.character.ui.adapter.CharacterAdapter.Companion.VIEW_TYPE_ITEM
+import com.example.rickandmorty.character.ui.adapter.CharacterAdapter.Companion.VIEW_TYPE_LOADING
 import com.example.rickandmorty.databinding.FragmentCharacterBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -24,6 +27,7 @@ class CharacterFragment : Fragment(R.layout.fragment_character), CharacterAdapte
     private var _binding: FragmentCharacterBinding? = null
     private val binding get() = _binding!!
     private lateinit var characterAdapter: CharacterAdapter
+    private lateinit var gridLayoutManager: GridLayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,15 +47,38 @@ class CharacterFragment : Fragment(R.layout.fragment_character), CharacterAdapte
     }
 
     override fun onClickCharacter() {
-        TODO("Not yet implemented")
+
     }
 
     private fun configureUI() {
         characterAdapter = CharacterAdapter(this)
+        gridLayoutManager = GridLayoutManager(activity, CHARACTER_PER_ROW)
         binding.characterContentView.apply {
             adapter = characterAdapter
-            layoutManager = GridLayoutManager(activity, CHARACTER_PER_ROW)
+            layoutManager = gridLayoutManager
         }
+        // needed to define number of spans each item occupies
+        // when the type is VIEW_TYPE_LOADING, the loader must occupy all the row
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return when (characterAdapter.getItemViewType(position)) {
+                    VIEW_TYPE_ITEM -> 1
+                    VIEW_TYPE_LOADING -> CHARACTER_PER_ROW
+                    else -> 1
+                }
+            }
+        }
+
+        binding.characterContentView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!recyclerView.canScrollVertically(1)) {
+                    // viewModel.getCharacters()
+                    characterAdapter.addLoadingView()
+                }
+            }
+        })
+
     }
 
     private fun observeViewModel() {
