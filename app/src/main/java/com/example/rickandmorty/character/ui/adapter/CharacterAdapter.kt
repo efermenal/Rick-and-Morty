@@ -34,13 +34,9 @@ class CharacterAdapter(
     }
 
     fun addLoadingView() {
-        val newList = currentList + null
-        submitList(newList)
-    }
-
-    fun removeLoadingView() {
-        if (currentList.size != 0) {
-            val newList = currentList.subList(0, currentList.size - 1)
+        //  double check to prevent loading view when is not needed
+        if (currentList.size != 0 && currentList.contains(null).not()) {
+            val newList = currentList + null
             submitList(newList)
         }
     }

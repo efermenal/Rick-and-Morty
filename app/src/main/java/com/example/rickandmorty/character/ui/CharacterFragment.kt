@@ -10,24 +10,27 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter.Companion.VIEW_TYPE_ITEM
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter.Companion.VIEW_TYPE_LOADING
+import com.example.rickandmorty.character.ui.adapter.RecyclerViewLoadMoreOnScrollListener
 import com.example.rickandmorty.databinding.FragmentCharacterBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
-class CharacterFragment : Fragment(R.layout.fragment_character), CharacterAdapter.Listener {
+class CharacterFragment : Fragment(R.layout.fragment_character),
+    CharacterAdapter.Listener,
+    RecyclerViewLoadMoreOnScrollListener.Listener {
 
     private val viewModel: CharacterViewModel by viewModels()
     private var _binding: FragmentCharacterBinding? = null
     private val binding get() = _binding!!
     private lateinit var characterAdapter: CharacterAdapter
     private lateinit var gridLayoutManager: GridLayoutManager
+    private lateinit var onScrollListener: RecyclerViewLoadMoreOnScrollListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,16 +72,13 @@ class CharacterFragment : Fragment(R.layout.fragment_character), CharacterAdapte
             }
         }
 
-        binding.characterContentView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (!recyclerView.canScrollVertically(1)) {
-                    // viewModel.getCharacters()
-                    characterAdapter.addLoadingView()
-                }
-            }
-        })
+        onScrollListener = RecyclerViewLoadMoreOnScrollListener(this)
+        binding.characterContentView.addOnScrollListener(onScrollListener)
 
+    }
+
+    override fun onLoadMore() {
+        viewModel.getCharacters()
     }
 
     private fun observeViewModel() {
@@ -90,15 +90,22 @@ class CharacterFragment : Fragment(R.layout.fragment_character), CharacterAdapte
     }
 
     private fun renderUI(characterState: CharacterViewModel.ViewState) {
+
         when (characterState.isLoading) {
-            true -> {}
-            false -> {}
+            true -> {
+                characterAdapter.addLoadingView()
+            }
+            false -> {
+                characterAdapter.submitList(characterState.characters)
+                onScrollListener.loadFinished()
+            }
         }
-        characterAdapter.submitList(characterState.characters)
+
     }
 
     companion object {
         private const val CHARACTER_PER_ROW = 4
     }
+
 
 }
