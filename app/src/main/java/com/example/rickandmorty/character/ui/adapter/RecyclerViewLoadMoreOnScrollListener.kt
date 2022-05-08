@@ -15,6 +15,9 @@ class RecyclerViewLoadMoreOnScrollListener(
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
+        //  prevent subtle bug and improve performance
+        if (dy <= 0) return
+
         if (recyclerView.canScrollVertically(1) && isLoading.not()) {
             isLoading = true
             listener.onLoadMore()
