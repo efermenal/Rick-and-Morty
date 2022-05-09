@@ -72,7 +72,7 @@ class CharacterFragment : Fragment(R.layout.fragment_character),
             }
         }
 
-        onScrollListener = RecyclerViewLoadMoreOnScrollListener(this)
+        onScrollListener = RecyclerViewLoadMoreOnScrollListener(this, gridLayoutManager)
         binding.characterContentView.addOnScrollListener(onScrollListener)
 
     }
