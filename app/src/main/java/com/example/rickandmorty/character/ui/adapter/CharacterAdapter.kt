@@ -10,7 +10,7 @@ class CharacterAdapter(
 ) : ListAdapter<Character, CharacterHolder>(CharacterItemDiffCallback()) {
 
     interface Listener {
-        fun onClickCharacter()
+        fun onClickCharacter(episodes: List<String>)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterHolder {

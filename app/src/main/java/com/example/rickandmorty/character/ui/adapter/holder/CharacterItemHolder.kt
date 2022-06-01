@@ -15,19 +15,17 @@ sealed class CharacterHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     class CharacterItemHolder(
         private val binding: RowCharacterBinding,
-        listener: CharacterAdapter.Listener,
+        private val listener: CharacterAdapter.Listener,
     ) : CharacterHolder(binding.root) {
-
-        init {
-            itemView.setOnClickListener {
-                listener.onClickCharacter()
-            }
-        }
 
         fun bind(character: Character) {
             with(binding) {
                 characterName.text = character.name
                 characterImage.loadFromUrl(character.image)
+            }
+
+            itemView.setOnClickListener {
+                listener.onClickCharacter(character.episode)
             }
         }
 
