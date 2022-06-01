@@ -9,8 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.rickandmorty.R
+import com.example.rickandmorty.character.domain.EpisodeResponseItem
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter.Companion.VIEW_TYPE_ITEM
 import com.example.rickandmorty.character.ui.adapter.CharacterAdapter.Companion.VIEW_TYPE_LOADING
@@ -49,8 +51,8 @@ class CharacterFragment : Fragment(R.layout.fragment_character),
         _binding = null
     }
 
-    override fun onClickCharacter() {
-
+    override fun onClickCharacter(episodes: List<String>) {
+        viewModel.getEpisodes(episodes)
     }
 
     private fun configureUI() {
@@ -87,6 +89,11 @@ class CharacterFragment : Fragment(R.layout.fragment_character),
             .onEach {
                 renderUI(it)
             }.launchIn(lifecycleScope)
+
+        viewModel.commands
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { executeCommand(it) }
+            .launchIn(lifecycleScope)
     }
 
     private fun renderUI(characterState: CharacterViewModel.ViewState) {
@@ -101,6 +108,21 @@ class CharacterFragment : Fragment(R.layout.fragment_character),
             }
         }
 
+    }
+
+    private fun executeCommand(command: CharacterViewModel.Command) {
+        when (command) {
+            is CharacterViewModel.Command.NavigateToEpisode -> {
+                goToEpisodes(command.episodes)
+            }
+            CharacterViewModel.Command.ShowErrorMessage -> {}
+        }
+
+    }
+
+    private fun goToEpisodes(episodeResponseItem: List<EpisodeResponseItem>) {
+        val action = CharacterFragmentDirections.actionCharacterFragmentToEpisodeFragment()
+        findNavController().navigate(action)
     }
 
     companion object {
