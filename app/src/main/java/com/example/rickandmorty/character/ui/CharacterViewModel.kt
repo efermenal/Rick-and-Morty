@@ -3,7 +3,9 @@ package com.example.rickandmorty.character.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rickandmorty.character.domain.Character
+import com.example.rickandmorty.character.domain.EpisodeResponseItem
 import com.example.rickandmorty.character.domain.GetCharactersUseCase
+import com.example.rickandmorty.character.domain.GetEpisodesUseCase
 import com.example.rickandmorty.global.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CharacterViewModel @Inject constructor(
-    private val getCharactersUseCase: GetCharactersUseCase
+    private val getCharactersUseCase: GetCharactersUseCase,
+    private val getEpisodesUseCase: GetEpisodesUseCase,
 ) : ViewModel() {
 
     private val viewStateFlow: MutableStateFlow<ViewState> = MutableStateFlow(ViewState())
@@ -27,6 +30,7 @@ class CharacterViewModel @Inject constructor(
     val commands = commandChannel.receiveAsFlow()
 
     sealed class Command {
+        data class NavigateToEpisode(val episodes: List<EpisodeResponseItem>) : Command()
         object ShowErrorMessage : Command()
     }
 
@@ -70,5 +74,27 @@ class CharacterViewModel @Inject constructor(
     private suspend fun stopLoadAndEmitError() {
         viewStateFlow.emit(currentViewState().copy(isLoading = false))
         commandChannel.send(Command.ShowErrorMessage)
+    }
+
+    fun getEpisodes(episodeList: List<String>) {
+        viewModelScope.launch {
+            runCatching {
+                getEpisodesUseCase(episodeList)
+            }.onSuccess {
+                when (it) {
+                    is Result.Error -> {
+                        commandChannel.send(Command.ShowErrorMessage)
+                    }
+                    is Result.Exception -> {
+                        commandChannel.send(Command.ShowErrorMessage)
+                    }
+                    is Result.Success -> {
+                        commandChannel.send(Command.NavigateToEpisode(it.data))
+                    }
+                }
+            }.onFailure {
+                commandChannel.send(Command.ShowErrorMessage)
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.rickandmorty.di
 
 import com.example.rickandmorty.character.domain.CharacterRepository
 import com.example.rickandmorty.character.domain.GetCharactersUseCase
+import com.example.rickandmorty.character.domain.GetEpisodesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,5 +19,10 @@ object AppModule {
         return GetCharactersUseCase(characterRepository)
     }
 
+    @Provides
+    @Singleton
+    fun provideGetEpisodeUseCase(characterRepository: CharacterRepository): GetEpisodesUseCase {
+        return GetEpisodesUseCase(characterRepository)
+    }
 
 }

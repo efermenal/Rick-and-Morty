@@ -3,7 +3,9 @@ package com.example.rickandmorty.character.ui
 import com.example.rickandmorty.CoroutineTestRule
 import com.example.rickandmorty.character.domain.Character
 import com.example.rickandmorty.character.domain.CharacterRepository
+import com.example.rickandmorty.character.domain.EpisodeResponseItem
 import com.example.rickandmorty.character.domain.GetCharactersUseCase
+import com.example.rickandmorty.character.domain.GetEpisodesUseCase
 import com.example.rickandmorty.character.domain.Location
 import com.example.rickandmorty.character.domain.Origin
 import com.example.rickandmorty.character.ui.CharacterViewModel.Command
@@ -16,6 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.io.IOException
 
 @ExperimentalCoroutinesApi
 class CharacterViewModelTest {
@@ -25,8 +28,9 @@ class CharacterViewModelTest {
 
     private val characterRepository: CharacterRepository = mock()
     private val getCharactersUseCase = GetCharactersUseCase(characterRepository)
+    private val getEpisodesUseCase = GetEpisodesUseCase(characterRepository)
     private val viewModel: CharacterViewModel by lazy {
-        CharacterViewModel(getCharactersUseCase)
+        CharacterViewModel(getCharactersUseCase, getEpisodesUseCase)
     }
 
     @Test
@@ -44,9 +48,32 @@ class CharacterViewModelTest {
 
     @Test
     fun whenCallToApiFailsReturnError() = runTest {
-        whenever(getCharactersUseCase(1)).thenThrow(RuntimeException())
+        whenever(getCharactersUseCase(1)).then { IOException() }
 
         viewModel.getCharacters()
+
+        assertEquals(Command.ShowErrorMessage, viewModel.commands.first())
+    }
+
+    @Test
+    fun whenCallToEpisodeSuccessReturnEpisodes() = runTest {
+
+        val episodeList: List<String> = emptyList()
+        whenever(getEpisodesUseCase(episodeList)).thenAnswer {
+            Result.Success(getDefaultDummyEpisodes())
+        }
+        viewModel.getEpisodes(episodeList)
+        assertEquals(
+            Command.NavigateToEpisode(getDefaultDummyEpisodes()),
+            viewModel.commands.first()
+        )
+    }
+
+    @Test
+    fun whenCallToEpisodeThrowsExceptionReturnShowError() = runTest {
+        whenever(getEpisodesUseCase(emptyList())).then { IOException() }
+
+        viewModel.getEpisodes(emptyList())
 
         assertEquals(Command.ShowErrorMessage, viewModel.commands.first())
     }
@@ -80,6 +107,20 @@ class CharacterViewModelTest {
                 species = "",
                 status = "",
                 type = "",
+                url = ""
+            )
+        )
+    }
+
+    private fun getDefaultDummyEpisodes(): List<EpisodeResponseItem> {
+        return listOf(
+            EpisodeResponseItem(
+                airDate = "",
+                characters = listOf(),
+                created = "",
+                episode = "",
+                id = 0,
+                name = "",
                 url = ""
             )
         )
