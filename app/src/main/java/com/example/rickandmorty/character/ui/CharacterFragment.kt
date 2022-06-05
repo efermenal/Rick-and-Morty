@@ -121,7 +121,8 @@ class CharacterFragment : Fragment(R.layout.fragment_character),
     }
 
     private fun goToEpisodes(episodeResponseItem: List<EpisodeResponseItem>) {
-        val action = CharacterFragmentDirections.actionCharacterFragmentToEpisodeFragment()
+        val argument = EpisodeArguments(episodeResponseItem)
+        val action = CharacterFragmentDirections.actionCharacterFragmentToEpisodeFragment(argument)
         findNavController().navigate(action)
     }
 
