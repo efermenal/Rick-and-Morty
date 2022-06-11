@@ -1,0 +1,31 @@
+query CharactersQuery($page: Int!) {
+
+  characters(page: $page) {
+    info {
+      count
+      next
+      pages
+      prev
+    }
+    results {
+      id
+      name
+      status
+      species
+      type
+      gender
+      origin {
+        name
+      }
+      location {
+        name
+      }
+      image
+      episode {
+        id
+      }
+      created
+    }
+  }
+
+}
