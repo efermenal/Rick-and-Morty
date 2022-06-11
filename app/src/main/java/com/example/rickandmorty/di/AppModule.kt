@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -15,13 +16,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGetCharactersUseCase(characterRepository: CharacterRepository): GetCharactersUseCase {
+    fun provideGetCharactersUseCase(@Named("graph") characterRepository: CharacterRepository): GetCharactersUseCase {
         return GetCharactersUseCase(characterRepository)
     }
 
     @Provides
     @Singleton
-    fun provideGetEpisodeUseCase(characterRepository: CharacterRepository): GetEpisodesUseCase {
+    fun provideGetEpisodeUseCase(@Named("graph") characterRepository: CharacterRepository): GetEpisodesUseCase {
         return GetEpisodesUseCase(characterRepository)
     }
 
