@@ -7,5 +7,10 @@ data class EpisodeResponseItem(
     val episode: String,
     val id: Int,
     val name: String,
-    val url: String
+    /**
+     * API REST URL
+     *
+     * It's null if comes from GraphQL
+     */
+    val url: String? = null
 )

@@ -29,3 +29,18 @@ query CharactersQuery($page: Int!) {
   }
 
 }
+
+query EpisodesQuery($ids: [ID!]!) {
+
+  episodesByIds(ids: $ids){
+    air_date
+    characters{
+      id
+    }
+    created
+    episode
+    name
+    id
+  }
+
+}
