@@ -1,6 +1,7 @@
 package com.example.rickandmorty.di
 
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.network.okHttpClient
 import com.example.rickandmorty.character.api.RickAndMortyApi
 import com.example.rickandmorty.character.api.Url
 import com.squareup.moshi.Moshi
@@ -61,9 +62,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApolloClient(): ApolloClient {
+    fun provideApolloClient(okHttpClient: OkHttpClient): ApolloClient {
         return ApolloClient.Builder()
             .serverUrl("https://rickandmortyapi.com/graphql")
+            .okHttpClient(okHttpClient)
             .build()
     }
 
